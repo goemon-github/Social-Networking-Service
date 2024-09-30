@@ -1,0 +1,62 @@
+FROM  ubuntu:latest
+
+WORKDIR /usr/src/app
+
+COPY . .
+
+# 必要な依存関係をインストール
+RUN apt-get update && apt-get install -y \
+    curl \
+    php \
+    php-fpm \
+    php-cli \
+    php-zip \
+    unzip \
+    memcached \
+    php-memcached \
+    postfix \
+    && apt-get clean
+
+# memcachedを起動
+RUN service memcached start
+
+# ホストのcomposerファイルをコピー
+COPY composer.json composer.json ./
+
+# composerをインストール
+RUN curl -sS https://getcomposer.org/installer -o composer-setup.php \
+    && HASH="$(curl -sS https://composer.github.io/installer.sig)" \
+    && echo "$HASH composer-setup.php" | sha384sum -c - \
+    && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
+    && rm composer-setup.php
+    
+
+# postfixのために仮の環境変数
+ENV EMAIL=test@eee.com
+ENV PASSWORD=test1234
+
+# postfixの設定
+RUN sed -i '/^relayhost=/d' /etc/postfix/main.cf && \
+    sed -i '/^smtp_tls_session_cache_database=/d' /etc/postfix/main.cf && \
+    echo "relayhost = [smtp.gmail.com]:587" >> /etc/postfix/main.cf && \
+    echo "smtp_use_tls = yes" >> /etc/postfix/main.cf && \
+    echo "smtp_sasl_auth_enable = yes" >> /etc/postfix/main.cf && \
+    echo "smtp_sasl_security_options = noanonymous" >> /etc/postfix/main.cf && \
+    echo "smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd" >> /etc/postfix/main.cf && \
+    echo "smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt" >> /etc/postfix/main.cf && \
+    echo "smtp_tls_session_cache_database = btree:/var/lib/postfix/smtp_scache" >> /etc/postfix/main.cf 
+
+
+#認証情報はコンテナの環境変数を使って設定
+RUN echo "[smtp.gmail.com]:587 $EMAIL:$PASSWORD" > /etc/postfix/sasl_passwd && \
+    chmod 600 /etc/postfix/sasl_passwd && \
+    # hash
+    postmap /etc/postfix/sasl_passwd && \
+    postfix start 
+
+
+# composerでinstallを実行
+RUN composer install --no-dev --optimize-autoloader
+
+
+CMD ["php", "-S", "0.0.0.0:3000", "-t", "public"]
