@@ -1,0 +1,5 @@
+FROM node:latest
+
+COPY ./src/frontend/. ./ 
+
+RUN npm install 

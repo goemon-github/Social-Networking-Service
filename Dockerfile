@@ -15,7 +15,8 @@ RUN apt-get update && apt-get install -y \
     libmemcached-dev\
     && apt-get clean
 
-RUN docker-php-ext-install zip 
+RUN docker-php-ext-install zip && \
+    docker-php-ext-install mysqli
 
 # memcachedを起動
 RUN service memcached start
@@ -30,10 +31,9 @@ RUN curl -sS https://getcomposer.org/installer -o composer-setup.php \
     && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
     && rm composer-setup.php
     
-
 # postfixのために仮の環境変数
-ENV EMAIL=test@eee.com
-ENV PASSWORD=test1234
+ARG MAIL_HOST
+ARG MAIL_PASSWORD
 
 # postfixの設定
 RUN sed -i '/^relayhost=/d' /etc/postfix/main.cf && \
@@ -48,7 +48,7 @@ RUN sed -i '/^relayhost=/d' /etc/postfix/main.cf && \
 
 
 #認証情報はコンテナの環境変数を使って設定
-RUN echo "[smtp.gmail.com]:587 $EMAIL:$PASSWORD" > /etc/postfix/sasl_passwd && \
+RUN echo "[smtp.gmail.com]:587 $MAIL_HOST:$MAIL_PASSWORD" > /etc/postfix/sasl_passwd && \
     chmod 600 /etc/postfix/sasl_passwd && \
     # hash
     postmap /etc/postfix/sasl_passwd && \
@@ -57,6 +57,5 @@ RUN echo "[smtp.gmail.com]:587 $EMAIL:$PASSWORD" > /etc/postfix/sasl_passwd && \
 
 # composerでinstallを実行
 RUN composer install --no-dev --optimize-autoloader
-
 
 CMD ["php", "-S", "0.0.0.0:3000", "-t", "public"]

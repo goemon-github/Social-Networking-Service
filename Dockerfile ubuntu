@@ -17,6 +17,8 @@ RUN apt-get update && apt-get install -y \
     postfix \
     && apt-get clean
 
+RUN docker-php-ext-install mysql
+
 # memcachedを起動
 RUN service memcached start
 
