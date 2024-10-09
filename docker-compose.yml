@@ -11,7 +11,7 @@ services:
       - MAIL_USER = ${MAIL_USER}
       - MAIL_PASSWORD = ${MAIL_PASSWORD}
     ports:
-      - 127.0.0.1:3000:3000
+      - 127.0.0.1:3001:9000
     working_dir: /var/www/html
     volumes:
       - ./src:/var/www/html
@@ -21,7 +21,7 @@ services:
       - db
   db:
     image: mysql:8.0
-    container_name: db_contaienr
+    container_name: db_container
     env_file:
       - .env
     ports:
@@ -36,12 +36,14 @@ services:
       context: .
       dockerfile: Dockerfile.node
     container_name: frontend_container
-    working_dir: /app
     volumes:
       -  ./src/frontend:/app
       -  ./src/public:/app/dist
     networks:
       - sns_network
+    ports:
+      - 127.0.0.1:3000:3000
+    command: npm run dev
 
 networks:
  sns_network:
