@@ -1,6 +1,6 @@
 ---
-name: feture rpullReqest
-about: プルリクエストに使用します
+name: feture rreqest
+about: issue
 title: ''
 labels: ''
 assignees: ''
