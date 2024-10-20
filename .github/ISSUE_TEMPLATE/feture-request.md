@@ -1,5 +1,5 @@
 ---
-name: feture rreqest
+name: feture reqest
 about: issue
 title: ''
 labels: ''
