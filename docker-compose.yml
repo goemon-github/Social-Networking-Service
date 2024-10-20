@@ -11,10 +11,10 @@ services:
       - MAIL_USER = ${MAIL_USER}
       - MAIL_PASSWORD = ${MAIL_PASSWORD}
     ports:
-      - 127.0.0.1:3001:9000
-    working_dir: /var/www/html
+      - 3001:9000
+    working_dir: /app 
     volumes:
-      - ./src:/var/www/html
+      - ./:/app
     networks:
       - sns_network
     depends_on:
@@ -28,6 +28,7 @@ services:
       - "3006:3306"
     volumes:
       - db_data:/var/lib/mysql
+      - ./Docker/db/my.cnf:/etc/mysql/my.cnf
     networks:
       - sns_network
 
@@ -42,7 +43,7 @@ services:
     networks:
       - sns_network
     ports:
-      - 127.0.0.1:3000:3000
+      - 3000:3000
     command: npm run dev
 
 networks:
