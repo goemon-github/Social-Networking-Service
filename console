@@ -1,0 +1,15 @@
+<?php
+
+require 'vendor/autoload.php';
+
+$commands = include "commands/registry.php";
+
+// 第２引数は実行するコマンド
+$inputCommand = $argv[1];
+
+// phpでインスタンス化できる全てのコマンドクラス名を調べます
+foreach($commands as $commandClass){
+    $alias = $commandClass::getAlias();
+}
+
+
