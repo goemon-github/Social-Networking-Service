@@ -10,6 +10,18 @@ $inputCommand = $argv[1];
 // phpでインスタンス化できる全てのコマンドクラス名を調べます
 foreach($commands as $commandClass){
     $alias = $commandClass::getAlias();
+
+    if($inputCommand === $alias){
+        if(in_array('--help', $argv)){
+            fwrite(STDOUT, $commandClass::getHelp());
+            exit(0);
+        }else {
+            $command = new $commandClass();
+            $result = $command->execute();
+            exit($result);
+        }
+    }
 }
 
+fwrite(STDOUT, "Faild to run any commands\n");
 
