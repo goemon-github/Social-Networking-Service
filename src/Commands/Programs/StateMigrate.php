@@ -1,9 +1,9 @@
 <?php 
-namespace Commands\programs;
+namespace src\Commands\programs;
 
-use Commands\AbstractCommand;
-use Commands\Argument;
-use Database\MySQLWrapper;
+use src\Commands\AbstractCommand;
+use src\Commands\Argument;
+use src\Database\MySQLWrapper;
 
 class StateMigrate extends AbstractCommand {
 

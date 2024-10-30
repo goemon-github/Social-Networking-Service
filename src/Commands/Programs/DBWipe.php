@@ -1,13 +1,13 @@
 <?php
 
-namespace Commands\Programs;
+namespace src\Commands\Programs;
 
-use Commands\AbstractCommand;
-use Commands\Argument;
+use src\Commands\AbstractCommand;
+use src\Commands\Argument;
 
-use Database\MySQLWrapper;
+use src\Database\MySQLWrapper;
 use Exception;
-use Helpers\Settings;
+use src\Helpers\Settings;
 
 class DBWipe extends AbstractCommand {
     protected static ?string $alias = 'dbwipe';
@@ -25,7 +25,7 @@ class DBWipe extends AbstractCommand {
 
         if($backup !== false){
             $this->log('staring backup .......');
-            $this->createBackup();
+            $this->createBackup($backup);
             $this->log('backup success......');
         }
 

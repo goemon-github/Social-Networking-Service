@@ -1,10 +1,10 @@
 <?php
 
-namespace Commands\Programs;
+namespace src\Commands\Programs;
 
-use Commands\AbstractCommand;
-use Database\MySQLWrapper;
-use Database\Seeder;
+use src\Commands\AbstractCommand;
+use src\Database\MySQLWrapper;
+use src\Database\Seeder;
 
 class Seed extends AbstractCommand {
 
@@ -35,7 +35,7 @@ class Seed extends AbstractCommand {
 
                 if(class_exists($className) && is_subclass_of($className, Seeder::class)) {
                     $seeder = new $className(new MySQLWrapper());
-                    $seeder = seed();
+                    $seeder->seed();
                 }else {
                     throw new \Exception('Seeder must be a class that subclasses the seeder interface');
 

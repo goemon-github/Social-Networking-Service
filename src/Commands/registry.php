@@ -1,8 +1,9 @@
 <?php
+
 return [
-    Commands\Programs\Migrate::class,
-    Commands\Programs\DBWipe::class,
-    Commands\Programs\CodeGeneration::class,
-    Commands\Programs\StateMigrate::class,
-    Commands\Programs\Seed::class,
+   src\Commands\Programs\Migrate::class,
+   src\Commands\Programs\DBWipe::class,
+   src\Commands\Programs\CodeGeneration::class,
+   src\Commands\Programs\StateMigrate::class,
+   src\Commands\Programs\Seed::class,
 ];

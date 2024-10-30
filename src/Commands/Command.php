@@ -1,6 +1,6 @@
 <?php
 
-namespace Commands;
+namespace src\Commands;
 
 interface Command {
      // インスタンス化せずにデータにアクセスできるように、静的関数を使用します。

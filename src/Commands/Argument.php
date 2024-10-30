@@ -1,12 +1,12 @@
 <?php
 
-namespace Commands;
+namespace src\Commands;
 
 class Argument {
     private string $argument;
     private string $description = '';
-    private string $required =  true;
-    private string $allowAsShort = false;
+    private bool $required =  true;
+    private bool $allowAsShort = false;
 
     public function __construct(string $argument){
        $this->argument = $argument; 

@@ -1,9 +1,9 @@
 <?php
 
-namespace Commands\Programs;
+namespace src\Commands\Programs;
 
-use Commands\AbstractCommand;
-use Commands\Argument;
+use src\Commands\AbstractCommand;
+use src\Commands\Argument;
 
 class CodeGeneration extends AbstractCommand {
     protected static ?string $alias = 'code-gen';
@@ -67,6 +67,8 @@ class CodeGeneration extends AbstractCommand {
                 // ロールバックロジックを追加してください
                 return [];
             }
+
+
         }
         MIGRATION;
     }

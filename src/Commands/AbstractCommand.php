@@ -1,6 +1,6 @@
 <?php
 
-namespace Commands;
+namespace src\Commands;
 
 use Exception;
 

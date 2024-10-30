@@ -1,8 +1,8 @@
 <?php
 
-require 'vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
-$commands = include "commands/registry.php";
+$commands = include "src/Commands/registry.php";
 
 // 第２引数は実行するコマンド
 $inputCommand = $argv[1];
