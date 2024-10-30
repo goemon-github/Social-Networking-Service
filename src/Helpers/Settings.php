@@ -1,5 +1,5 @@
 <?php
-namespace Helers;
+namespace src\Helpers;
 
 use Exception;
 

@@ -33,8 +33,20 @@
 	// Uncomment the next line to run commands after the container is created.
 	// "postCreateCommand": "cat /etc/os-release",
 
+
 	// Configure tool-specific properties.
 	"customizations": {
+		"settings": {
+			// デフォルトのphp機能をオフ、補完もオフ
+			"php.validate.enable": false,
+			"php.suggest.basic": false
+		},
+		"[php]": {
+			// 自動でフォーマット
+            "editor.formatOnSave": true,
+			// デフォルトのフォーマッターをintelephenseに設定
+            "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+        },
 		"vscode": {
 			"extensions": [
 				"VisualStudioExptTeam.vscodeintellicode",
