@@ -6,14 +6,15 @@ use mysqli;
 use src\Helpers\Settings;
 
 class MySQLWrapper extends mysqli {
-    public function __construct(string $hostname = 'localhost', string $username = null, ?string $password=null, $database = null, ?int $port = null, ?string $socket = null)
+    public function __construct(string $hostname = null , string $username = null, ?string $password=null, $database = null, ?int $port = null, ?string $socket = null)
     {
         // 接続に失敗すると例外を投げ、エラーを報告します。
         mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         
-        $username = $username??Settings::env('DATABASE_USER');
-        $password = $password??Settings::env('DATABASE_USER_PASSWORD');
-        $database = $database??Settings::env('DATABASE_NAME');
+        $hostname = $hostname??Settings::env("MYSQL_HOST");
+        $username = $username??Settings::env('MYSQL_USER');
+        $password = $password??Settings::env('MYSQL_USER_PASSWORD');
+        $database = $database??Settings::env('MYSQL_DATABASE_NAME');
 
         parent::__construct($hostname, $username, $password, $database, $port, $socket);
     }

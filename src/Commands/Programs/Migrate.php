@@ -47,7 +47,7 @@ class Migrate extends AbstractCommand {
 
         $result = $mysqli->query("
             CREATE TABLE IF NOT EXISTS migrations (
-                if INT AUTO_INCREMWNT PRIMARY KEY.
+                id INT AUTO_INCREMENT PRIMARY KEY,
                 filename VARCHAR(255) NOT NULL
             ); 
         ");
@@ -71,7 +71,9 @@ class Migrate extends AbstractCommand {
             include_once($filename);
 
             $migrationClass = $this->getClassnameFromMigrationFilename($filename);
+
             $migration = new $migrationClass();
+
             $this->log(sprintf("Processing up migration for %s", $migrationClass));
             $queries = $migration->up();
             if (empty($queries))  throw new \Exception("Must have queies to run for . " . $migrationClass);
@@ -89,7 +91,7 @@ class Migrate extends AbstractCommand {
         // ([^_]+): "_"以外のすべての文字を一致させます。()はグループをキャプチャするためのもので、[^abc]はabc以外を意味します。キャプチャグループは個別に一致させるために使用されます。
         // \.php: "."が"\"でエスケープされているので、これは終端が'.php'に一致しなければならないことを意味します。
         if(preg_match('/([^_]+)\.php$/', $filename, $matches)) {
-            return sprintf("%s\%s", 'Database\Migrations', $matches[1]);
+            return sprintf("%s\%s", 'src\Database\Migrations', $matches[1]);
         } else {
             throw new \Exception("Unexpected migration filename format: " . $filename);
         }  
@@ -111,8 +113,9 @@ class Migrate extends AbstractCommand {
 
     private function getAllMigrationFiles(string $order = 'asc'): array {
         $directory = sprintf("%s/../../Database/Migrations", __DIR__);
-        $this->log($directory . "/*.php");
+        $this->log($directory); 
 
+        $allFiles = glob($directory . "/*.php");
         usort($allFiles, function($a, $b) use ($order) {
             $compareResult = strcmp($a, $b);
             return ($order === 'desc') ? -$compareResult : $compareResult;
@@ -174,7 +177,7 @@ class Migrate extends AbstractCommand {
             include_once($filename);
 
             $migrationsClass = $this->getClassnameFromMigrationFilename($filename);
-            $migration = new $migrationClass();
+            $migration = new $migrationsClass();
 
             $queries = $migration->down();
             if(empty($queries)) throw new \Exception("Must have queries to run for . " . $migrationClass);
