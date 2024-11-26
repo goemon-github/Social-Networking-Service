@@ -26,6 +26,7 @@ services:
       - .env
     ports:
       - "3006:3306"
+    hostname: "mysql"
     volumes:
       - db_data:/var/lib/mysql
       - ./Docker/db/my.cnf:/etc/mysql/my.cnf

@@ -3,6 +3,7 @@
 namespace src\Commands\Programs;
 
 use src\Commands\AbstractCommand;
+use src\Commands\Argument;
 use src\Database\MySQLWrapper;
 use src\Database\Seeder;
 
@@ -15,21 +16,23 @@ class Seed extends AbstractCommand {
     }
 
     public function execute(): int {
+        $argument = $this->getArgumentValue('update');
+
         $this->runAllSeeds();
         return 0;
     }
 
-    function runAllSeeds(): void {
-        $directoryPath = __DIR__ . '/../../Databese/Seeds';
+    public function runAllSeeds(): void {
+        $directoryPath = __DIR__ . '/../../Database/Seeds';
 
         // ディレクトリをスキャンして全てのファイルを取得します
         $files = scandir($directoryPath);
-
+        
         foreach($files as $file){
             if (pathinfo($file, PATHINFO_EXTENSION) === 'php') {
                 // ファイル名からクラス名を抽出します
-                $className = 'Databese\Seeds\\' . pathinfo($file, PATHINFO_FILENAME);
-
+                $className = 'src\Database\Seeds\\' . pathinfo($file, PATHINFO_FILENAME);
+                
                 // シードファイルをインクルードします
                 include_once $directoryPath . "/" . $file;
 
@@ -42,6 +45,10 @@ class Seed extends AbstractCommand {
                 }
             }
         }
+    }
+
+    public function updateSeeds(): void {
+
     }
 
 }

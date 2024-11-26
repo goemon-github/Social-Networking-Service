@@ -52,7 +52,8 @@
 				"VisualStudioExptTeam.vscodeintellicode",
 				"bmewburn.vscode-intelephense-client",
 				"bradlc.vscode-tailwindcss",
-				"ms-vscode.vscode-typescript-next"
+				"ms-vscode.vscode-typescript-next",
+				"vscodevim.vim"
 			]
 		}
 	 }
