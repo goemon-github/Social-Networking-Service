@@ -24,7 +24,7 @@ abstract class AbstractSeeder implements Seeder {
         $this->conn = $conn;
     }
 
-    public function seed(): void {
+    public function seed($action = 'insert'): void {
         $data = $this->createRowData();
 
         if($this->tableName === null) throw new \Exception('Class requires a table name');
@@ -33,7 +33,11 @@ abstract class AbstractSeeder implements Seeder {
         foreach ($data as $row) {
             // 行を検証し、問題がなければ行を挿入します。
             $this->validateRow($row);
-            $this->insertRow($row);
+            if($action === 'update'){
+                $this->updateRow($row);
+            }else {
+                $this->insertRow($row);
+            }
         }
     }
 
@@ -49,6 +53,7 @@ abstract class AbstractSeeder implements Seeder {
 
             // get_debug_typeはネイティブのPHP 8タイプを返します。例えば、floatsのgettype、gettype(4.5)は、ネイティブのデータタイプ'float'ではなく文字列'double'を返します。
             if (get_debug_type($value) !== $columnDataType) throw new \InvalidArgumentException(sprintf("Value for %s should be of type %s. Here is the current value: %s", $columnName, $columnDataType, json_encode($value)));
+            
         }
     }
 
@@ -60,12 +65,17 @@ abstract class AbstractSeeder implements Seeder {
         // クエリを準備する際、count($row)のプレースホルダー '?' があります。bind_param関数はこれらにデータを挿入します。
         $placeholders = str_repeat('?,', count($row) - 1) . '?';
 
+
+        error_log(var_export($placeholders, true));
+
         $sql = sprintf(
             'INSERT INTO %s (%s) VALUES (%s)',
             $this->tableName,
             implode(', ', $columnNames),
             $placeholders
         );
+
+        error_log(var_export($sql, true));
 
         $stmt = $this->conn->prepare($sql);
 
@@ -79,4 +89,45 @@ abstract class AbstractSeeder implements Seeder {
         $stmt->execute();
     }
 
+
+     protected function updateRow(array $row): void {
+        // カラム名を取得します。
+        $columnNames = array_map(function($columnInfo){ return $columnInfo['column_name'];}, $this->tableColumns);
+
+        // set句のプレースホルダーを作成
+        $setClause = 
+
+        // クエリを準備する際、count($row)のプレースホルダー '?' があります。bind_param関数はこれらにデータを挿入します。
+        $placeholders = str_repeat('?,', count($row) - 1) . '?';
+
+
+        error_log(var_export($placeholders, true));
+
+        // updateをする行を特定するためにwhereで指定
+
+
+        $sql = sprintf(
+            'UPDATE  %s 
+            SET %s = %s
+            WHERE %s = $s',
+            $this->tableName,
+            implode(', ', $columnNames),
+            '?',
+            
+        );
+
+        error_log(var_export($sql, true));
+
+        $stmt = $this->conn->prepare($sql);
+
+        // implodeは配列を一つの文字列に結合し、その文字列を返します。
+        $dataTypes = implode(array_map(function($columnInfo){ return static::AVAILABLE_TYPES[$columnInfo['data_type']];}, $this->tableColumns));
+
+        // bind paramsは文字の配列（文字列）を取り、それぞれに値を挿入します。
+        // 例：$stmt->bind_param('iss', ...array_values([1, 'John', 'john@example.com'])) は、ステートメントに整数、文字列、文字列を挿入します。
+        $stmt->bind_param($dataTypes, ...array_values($row));
+
+        $stmt->execute();
+
+     }
 }

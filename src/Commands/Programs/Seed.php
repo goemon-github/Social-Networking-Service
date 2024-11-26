@@ -3,6 +3,7 @@
 namespace src\Commands\Programs;
 
 use src\Commands\AbstractCommand;
+use src\Commands\Argument;
 use src\Database\MySQLWrapper;
 use src\Database\Seeder;
 
@@ -15,11 +16,13 @@ class Seed extends AbstractCommand {
     }
 
     public function execute(): int {
+        $argument = $this->getArgumentValue('update');
+
         $this->runAllSeeds();
         return 0;
     }
 
-    function runAllSeeds(): void {
+    public function runAllSeeds(): void {
         $directoryPath = __DIR__ . '/../../Database/Seeds';
 
         // ディレクトリをスキャンして全てのファイルを取得します
@@ -42,6 +45,10 @@ class Seed extends AbstractCommand {
                 }
             }
         }
+    }
+
+    public function updateSeeds(): void {
+
     }
 
 }
