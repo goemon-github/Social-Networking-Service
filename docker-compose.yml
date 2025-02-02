@@ -8,13 +8,14 @@ services:
     env_file:
       - .env
     environment:
-      - MAIL_USER = ${MAIL_USER}
-      - MAIL_PASSWORD = ${MAIL_PASSWORD}
+      - MAIL_USER=${MAIL_USER}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
     ports:
       - 3001:9000
-    working_dir: /app 
+    working_dir: /app
     volumes:
       - ./:/app
+      -  ./src/public:/src/frontend/dist
     networks:
       - sns_network
     depends_on:
@@ -32,6 +33,7 @@ services:
       - ./Docker/db/my.cnf:/etc/mysql/my.cnf
     networks:
       - sns_network
+
 
   node:
     build:

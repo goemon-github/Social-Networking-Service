@@ -58,4 +58,17 @@ RUN echo "[smtp.gmail.com]:587 $MAIL_HOST:$MAIL_PASSWORD" > /etc/postfix/sasl_pa
 # composerでinstallを実行
 RUN composer install --no-dev --optimize-autoloader
 
+#nodeの準備
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs
+
+
+WORKDIR /usr/src/app/src/frontend
+RUN npm install 
+RUN npm run build
+
+WORKDIR /usr/src/app
 CMD ["php", "-S", "0.0.0.0:3000", "-t", "public"]
+
+
+

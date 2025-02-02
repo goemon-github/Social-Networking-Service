@@ -6,5 +6,8 @@ export default {
         watch: {
             usePolling: true, // ファイル変更をポーリングで検知する
         },
+        build: {
+            outDir: '/src/public',
+        }
     }
   }

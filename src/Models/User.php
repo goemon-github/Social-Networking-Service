@@ -8,21 +8,22 @@ class User implements Model{
     use GenericModel;
 
     public function __construct(
-        private ?int $id,
-        private string $userName,
-        private string $accountName,
+        private string $userName, 
+        private string $password,
         private string $email,
-        private bool $emaiVerified = false,
-        private string $profile,
-        private string $imageUrlHash,
-        private ?DateTimeStamp $dateTimeStamp = null,
+        private ?int $id = null ,
+        private ?string $accountName = '',
+        private bool $emailVerified = false,
+        private ?string $profile = '',
+        private ?string $imagePath = '',
+        private ?DateTimeStamp $dateTimeStamp  = null,
     ){}
 
     public function setId(int $id): void {
         $this->id = $id;
     }
 
-    public function getId(): int {
+    public function getId(): ?int {
         return $this->id;
     }
 
@@ -42,6 +43,14 @@ class User implements Model{
         return $this->accountName;
     }
 
+    public function setPassword(string $password): void {
+        $this->password = $password;
+    }
+
+    public function getPassword(): string {
+        return $this->password;
+    }
+
     public function setEmail(string $email): void {
         $this->email = $email;
     }
@@ -51,11 +60,11 @@ class User implements Model{
     }
 
     public function setEmailVerified(bool $verified):void {
-        $this->emaiVerified = $verified;
+        $this->emailVerified = $verified;
     }
 
     public function getEmailVerified(): bool {
-        return $this->emaiVerified;
+        return $this->emailVerified;
     }
 
     public function setProfile(string $profile): void {
@@ -66,11 +75,21 @@ class User implements Model{
         return $this->profile;
     }
 
-    public function setImageUrlHash(string $imageUrlHash): void {
-        $this->imageUrlHash = $imageUrlHash;
+    public function setImagePath(string $imagePath): void {
+        $this->imagePath= $imagePath;
     }
 
-    public function getImageUrlHash(): string {
-        return $this->imageUrlHash;
+    public function getImagePath(): string {
+        return $this->imagePath;
+    }
+
+    public function generateSignedURLQueryParams(int $time = 30): array {
+        $lasts = 1 * 60 * $time;
+        $queryParameters = [
+            'id' => $this->getId(),
+            'user' => hash('sha256', $this->getEmail()),
+            'expiration' => time() + $lasts,
+        ];
+        return $queryParameters;
     }
 }

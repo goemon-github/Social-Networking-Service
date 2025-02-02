@@ -29,7 +29,6 @@ class UserPosts extends AbstractSeeder {
         $data = [];
 
         foreach($userIds as $row) {
-            error_log(print_r(gettype($row['id'])));
             if(isset($row['id'])){
                 $data[] = [
                     $row['id'],
@@ -38,7 +37,6 @@ class UserPosts extends AbstractSeeder {
             }
         }
 
-        error_log(print_r($data, true));
         return $data;
     }
 
