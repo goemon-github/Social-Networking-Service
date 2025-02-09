@@ -1,3 +1,11 @@
-.{
+.like-red {
+    stroke: red;
+    fill: red;
+}
 
+.like-outline {
+    stroke: black; 
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
 }

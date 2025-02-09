@@ -12,13 +12,13 @@ class PostDAOImpl implements PostDAO {
     public function create(Post $post): bool {
         if($post->getPostId() !== null) throw new Exception("Cannot create a post with an existing ID. id: " . $post->getPostId());
         $mysqli = DatabaseManager::getMysqliConnection();
-        $query = "INSERT INTO posts (user_id, content) VALUES (? ?)";
+        $query = "INSERT INTO posts (user_id, content) VALUES (?, ?)";
         $result = $mysqli->prepareAndExecute(
             $query,
-            'ds',
+            'is',
             [
                 $post->getUserId(),
-                $post->getCountet()
+                $post->getContent()
             ]
         );
 
@@ -28,21 +28,23 @@ class PostDAOImpl implements PostDAO {
     }
 
 
-    public function getById(int $id): ?Post {
+    public function getById(int $post_id): ?Post {
         $mysqli = DatabaseManager::getMysqliConnection();
 
-        $query = "SELECT FROM * posts WHERE id = ?";
+        $query = "SELECT * FROM  posts WHERE id = ?";
 
-        $result = $mysqli->prepareAndFetchAll($query, 'i', [$id]);
+        $result = $mysqli->prepareAndFetchAll($query, 'i', [$post_id]);
 
-        if(!$result) return false;
-        return $this->rawDataToPost($result);
+         
+        if(!$result || count($result) === 0) return null;
+
+        return $this->rawDataToPost($result[0]);
     }
 
     public function getByUserId(int $user_id): ?Post {
         $mysqli = DatabaseManager::getMysqliConnection();
 
-        $query = "SELECT FROM * posts WHERE user_id = ?";
+        $query = "SELECT * FROM posts WHERE user_id = ?";
 
         $result = $mysqli->prepareAndFetchAll($query, 'i', [$user_id]);
 
@@ -50,10 +52,30 @@ class PostDAOImpl implements PostDAO {
         return $this->rawDataToPost($result);
     }
 
+    public function getUserPosts(int $user_id): ?array {
+        $mysqli = DatabaseManager::getMysqliConnection();
+        $query = 
+        'SELECT posts.*, users.user_name 
+        FROM posts
+        JOIN users ON users.id = posts.user_id
+        WHERE posts.user_id = ?
+        ORDER BY posts.created_at DESC';
+        $reslut = $mysqli->prepareAndFetchAll($query, 'i', [$user_id]);
+
+        if(!$reslut) return false;
+
+        $posts = [];
+        foreach($reslut as $data){
+            $posts[] = $this->rawDataToPost($data);
+        }
+
+        return $posts;
+    }
+
     public function getAll(): array {
         $mysqli = DatabaseManager::getMysqliConnection();
 
-        $query = "SELECT FROM * posts ORDER BY created_at DESC";
+        $query = "SELECT * FROM posts JOIN users ON users.id = posts.user_id  ORDER BY posts.created_at DESC";
 
         $result = $mysqli->query($query);
         if(!$result) return false;
@@ -61,10 +83,11 @@ class PostDAOImpl implements PostDAO {
         $posts = [];
         while($row = $result->fetch_assoc()){
             $posts[] = new Post(
-                user_id: $row['id'],
-                post_id: $row['post_id'],
+                user_id: $row['user_id'],
+                post_id: $row['id'],
+                user_name: $row['user_name'],
                 content: $row['content'],
-                like_count: $row['like_count'],
+                likes_count: $row['likes_count'],
                 dateTimeStamp: new DateTimeStamp($row['created_at'], $row['updated_at'])
             );
         }
@@ -95,13 +118,28 @@ class PostDAOImpl implements PostDAO {
     
     }
 
+    public function countLikes(int $post_id, bool $status): bool {
+        $mysqli = DatabaseManager::getMysqliConnection();
+        if($status){
+            $query = "UPDATE posts SET likes_count = likes_count + 1 WHERE id = ?";
+        }else {
+            $query = "UPDATE posts SET likes_count = likes_count - 1 WHERE id = ?";
+        }
+
+        $result = $mysqli->prepareAndExecute($query, 'i', [$post_id]);
+        if(!$result) return false;
+        return $result;
+    }
+
     private function rawDataToPost(array $data): Post {
-        return new Post(
+        return  new Post(
             post_id: $data['id'],
             user_id: $data['user_id'],
+            user_name: $data['user_name'],
             content: $data['content'],
-            like_count: $data['like_count'],
+            likes_count: $data['likes_count'],
             dateTimeStamp: new DateTimeStamp($data['created_at'], $data['updated_at'])
         );
     }
+
 }

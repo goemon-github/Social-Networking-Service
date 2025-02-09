@@ -153,26 +153,53 @@ return  [
 
             $user = Authenticate::getAuthenticatedUser();
 
-            $post = new Post($validatedData['post'], $user->getId());
+            $post = new Post($validatedData['post'], $user->getId(), $user->getUserName());
 
             $postDAO = DAOFactory::getPostDAO();
 
             $postDAO->create($post);
 
-            $getPost = $postDAO->getById();
-
-
-
-
-
-        }catch(Exception $e){
+       }catch(\InvalidArgumentException $e){
+            error_log($e->getMessage());
+            flashData::setFlashData('error', 'Invalid Data.');
+       }catch(Exception $e){
             error_log($e->getMessage());
             flashData::setFlashData('error', 'An error occurred.');
-        }
-
-
+       }
         return new HTMLRenderer('page/home');
     }),
+    'profile' => Route::create("profile", function(): HTTPRenderer {
+       return new HTMLRenderer('page/home');
+    }),
+    'post/like' => Route::create('post/like', function(): HTTPRenderer{
+        if($_SERVER['REQUEST_METHOD'] !== 'POST') throw new Exception('Invalid request method!');
+
+        try{
+            $postId = $_POST['postId'];
+            $status = ($_POST['status'] === 'true') ? true : false;
+            $postDAO = DAOFactory::getPostDAO();
+            $result = $postDAO->countLikes($postId, $status);
+        
+            header('Content-Type: application/json');
+            if($result){
+                $post = $postDAO->getById($postId);
+                $data = [
+                    "success" => true,
+                    "likeCount" => $post->getLikeCount()
+                ];
+                return new JSONRenderer($data);
+            };
+        }catch(Exception $e){
+            error_log($e->getMessage());
+            $data = [
+                "success" => false
+            ];
+            return new JSONRenderer($data);
+        }
+    }),
+    'post/commnet' => Route::create('post/commnet', function(): HTTPRenderer {
+
+    })
 ];
 // profile/userID
 // notifications

@@ -1,6 +1,7 @@
 <?php 
 namespace src\Models;
 
+use PDO;
 use src\Models\Interfaces\Model;
 use src\Models\Traits\GenericModel;
 use src\Models\DateTimeStamp;
@@ -11,7 +12,8 @@ class Post implements Model {
     public function __construct(
         private string $content,
         private int $user_id,
-        private int $like_count = 0,
+        private string $user_name,
+        private int $likes_count = 0,
         private ?int $post_id = null,
         private ?DateTimeStamp $dateTimeStamp = null,
     ){}
@@ -32,15 +34,23 @@ class Post implements Model {
         $this->user_id = $user_id;
     }
 
-    public function getLikeCount(): int{
-        return $this->like_count;
-    } 
-
-    public function setLikeCount(int $like_count) {
-        $this->like_count = $like_count;
+    public function getUserName(): string{
+        return $this->user_name; 
     }
 
-    public function getCountet(): string {
+    public function setUserName(int $user_name): void {
+        $this->user_name = $user_name;
+    }
+
+    public function getLikeCount(): int{
+        return $this->likes_count;
+    } 
+
+    public function setLikeCount(int $likes_count) {
+        $this->likes_count = $likes_count;
+    }
+
+    public function getContent(): string {
         return $this->content;
     }
      
