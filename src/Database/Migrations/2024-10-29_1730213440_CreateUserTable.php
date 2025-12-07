@@ -10,7 +10,7 @@ class CreateUserTable implements SchemaMigration
     {
         // マイグレーションロジックをここに追加してください
         return [
-            "CREATE TABLE users (
+            "CREATE TABLE IF NOT EXISTS users (
             id BIGINT PRIMARY KEY AUTO_INCREMENT,
             user_name VARCHAR(255) NOT NULL,
             password VARCHAR(32) NOT NULL,

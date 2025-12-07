@@ -1,6 +1,6 @@
 FROM php:8.2-fpm 
 
-WORKDIR /usr/src/app
+WORKDIR /var/www/html
 
 COPY . .
 
@@ -19,10 +19,10 @@ RUN docker-php-ext-install zip && \
     docker-php-ext-install mysqli
 
 # memcachedを起動
-RUN service memcached start
+#RUN service memcached start
 
 # ホストのcomposerファイルをコピー
-COPY composer.json composer.json ./
+COPY  composer.json ./
 
 # composerをインストール
 RUN curl -sS https://getcomposer.org/installer -o composer-setup.php \
@@ -58,4 +58,19 @@ RUN echo "[smtp.gmail.com]:587 $MAIL_HOST:$MAIL_PASSWORD" > /etc/postfix/sasl_pa
 # composerでinstallを実行
 RUN composer install --no-dev --optimize-autoloader
 
-CMD ["php", "-S", "0.0.0.0:3000", "-t", "public"]
+#nodeの準備
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs
+
+RUN { \
+    echo "log_errors=On"; \
+    echo "error_log=/proc/self/fd/2"; \
+  } > /usr/local/etc/php/conf.d/99-error.ini
+RUN { \
+    echo "[www]\ncatch_workers_output = yes"; \
+  } > /usr/local/etc/php-fpm.d/99-catch.conf
+
+WORKDIR /var/www/html
+
+
+CMD ["php-fpm"]

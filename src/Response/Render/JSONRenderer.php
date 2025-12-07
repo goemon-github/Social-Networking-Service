@@ -2,9 +2,9 @@
 
 namespace src\Response\Render;
 
-use src\Response\HTTPRender;
+use src\Response\HTTPRenderer;
 
-class JSONRender implements HTTPRender {
+class JSONRenderer implements HTTPRenderer {
     private array $data;
 
     public function __construct(array $data){
@@ -17,7 +17,7 @@ class JSONRender implements HTTPRender {
         ];    
     }
 
-    public function getContet(): string{
+    public function getContent(): string{
        return json_encode($this->data, JSON_THROW_ON_ERROR);
     }
 }

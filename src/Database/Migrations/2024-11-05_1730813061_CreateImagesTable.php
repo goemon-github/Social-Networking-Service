@@ -10,7 +10,7 @@ class CreateImagesTable implements SchemaMigration
     {
         // マイグレーションロジックをここに追加してください
         return [
-            "CREATE TABLE images (
+            "CREATE TABLE IF NOT EXISTS images (
                 id BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT,
                 user_id BIGINT NOT NULL,
                 image_path VARCHAR(255) NOT NULL,

@@ -66,7 +66,6 @@ abstract class AbstractSeeder implements Seeder {
         $placeholders = str_repeat('?,', count($row) - 1) . '?';
 
 
-        error_log(var_export($placeholders, true));
 
         $sql = sprintf(
             'INSERT INTO %s (%s) VALUES (%s)',
@@ -75,7 +74,6 @@ abstract class AbstractSeeder implements Seeder {
             $placeholders
         );
 
-        error_log(var_export($sql, true));
 
         $stmt = $this->conn->prepare($sql);
 
@@ -101,7 +99,6 @@ abstract class AbstractSeeder implements Seeder {
         $placeholders = str_repeat('?,', count($row) - 1) . '?';
 
 
-        error_log(var_export($placeholders, true));
 
         // updateをする行を特定するためにwhereで指定
 
@@ -116,7 +113,6 @@ abstract class AbstractSeeder implements Seeder {
             
         );
 
-        error_log(var_export($sql, true));
 
         $stmt = $this->conn->prepare($sql);
 

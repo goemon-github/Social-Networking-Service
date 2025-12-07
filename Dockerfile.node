@@ -1,9 +1,9 @@
-FROM node:latest
+FROM node:18-alpine
 
-WORKDIR /app/
+WORKDIR /var/www/html/src/frontend
 
 COPY ./src/frontend/package*.json ./ 
 RUN npm install 
 
-COPY ./src/frontend/ ./ 
+COPY ./src/frontend/ .
 RUN npm run build

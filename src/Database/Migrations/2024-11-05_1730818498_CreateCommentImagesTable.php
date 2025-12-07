@@ -10,7 +10,7 @@ class CreateCommentImagesTable implements SchemaMigration
     {
         // マイグレーションロジックをここに追加してください
         return [
-            "CREATE TABLE comment_images(
+            "CREATE TABLE IF NOT EXISTS comment_images(
                 comment_id BIGINT NOT NULL,
                 image_id BIGINT NOT NULL,
                 PRIMARY KEY (comment_id, image_id),

@@ -10,10 +10,9 @@ class AddProfileToUsersTable implements SchemaMigration
     {
         // マイグレーションロジックをここに追加してください
         return [
-            'ALTER TABLE users 
-            ADD COLUMN profile TEXT,
-            ADD COLUMN image_url VARCHAR(512)
-            '];
+            'ALTER TABLE users ADD COLUMN profile TEXT',
+            'ALTER TABLE users ADD COLUMN image_url VARCHAR(512)'
+        ];
     }
 
     public function down(): array

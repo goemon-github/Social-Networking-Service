@@ -10,7 +10,7 @@ class CreateCommentsLikesTable implements SchemaMigration
     {
         // マイグレーションロジックをここに追加してください
         return [
-            "CREATE TABLE comments_likes (
+            "CREATE TABLE IF NOT EXISTS comments_likes (
                 id BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT,
                 user_id BIGINT NOT NULL,
                 comment_id BIGINT,

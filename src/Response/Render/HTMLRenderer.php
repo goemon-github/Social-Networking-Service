@@ -3,9 +3,10 @@
 namespace src\Response\Render;
 
 use Exception;
-use src\Response\HTTPRender;
+use src\Helpers\Authenticate;
+use src\Response\HTTPRenderer;
 
-class HTMLRender implements HTTPRender {
+class HTMLRenderer implements HTTPRenderer{
 
     private string $viewFile;
     private array $data;
@@ -14,29 +15,23 @@ class HTMLRender implements HTTPRender {
     public function __construct(string $viewFile, array $data = []){
         $this->viewFile = $viewFile;
         $this->data = $data; 
+        // 
         $this->files = ['home','profile', 'notification', 'like', 'follow'];
     }
 
 
     public function getFields(): array{
         return [
-            'Content-Type' => 'text/html; charset=utf-8',
+            'Content-Type' => 'text/html; charset=UTF-8',
         ];
     }
 
-    public function getContet(): string{
+    public function getContent(): string{
        $viewPath = $this->getViewPath($this->viewFile);
         if(!file_exists($viewPath)){
             throw new \Exception("View file {$viewPath} does not exist.");
         }
 
-        /* 
-        if(!isset($this->data) && in_array(basename($this->viewFile), $this->files)){
-            $this->data = ['path'=> basename($this->viewFile)];
-        } else {
-            throw new \Exception("View file {$this->viewFile} does not exist.");
-        }
-            */
 
         ob_start();
 
@@ -52,7 +47,9 @@ class HTMLRender implements HTTPRender {
 
     private function getHeader(): string{
         ob_start();
+        $user = Authenticate::getAuthenticatedUser();
         require $this->getViewPath('layout/header');
+        require $this->getViewPath('component/message-boxes');
         return ob_get_clean();
     }
 
@@ -61,6 +58,5 @@ class HTMLRender implements HTTPRender {
         require $this->getViewPath('layout/footer');
         return ob_get_clean();
     }
-
 
 }
