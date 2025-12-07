@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../src/helpers/asset.php';
 
 $DEBUG = true;
 require_once __DIR__ . '/../src/Response/HTTPRenderer.php';
@@ -18,6 +19,9 @@ $routes = include(__DIR__ . '/../src/Routing/routes.php');
 
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $path = ltrim($path, '/');
+
+#$path = ltrim($_GET['path'] ?? '/', '/');
+
 
 if(isset($routes[$path])){
     // ルートの取得

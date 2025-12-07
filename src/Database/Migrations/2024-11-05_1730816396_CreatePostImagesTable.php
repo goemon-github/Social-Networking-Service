@@ -10,7 +10,7 @@ class CreatePostImagesTable implements SchemaMigration
     {
         // マイグレーションロジックをここに追加してください
         return [
-            "CREATE TABLE post_images(
+            "CREATE TABLE IF NOT EXISTS post_images(
                 post_id INT NOT NULL,
                 image_id BIGINT NOT NULL,
                 PRIMARY KEY (post_id, image_id),

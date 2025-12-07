@@ -144,6 +144,7 @@ return  [
         return  new HTMLRenderer('page/home');
     }),
     'form/post' => Route::create("form/post", function(): HTTPRenderer {
+        error_log('form/post------------');
         try{
             if($_SERVER['REQUEST_METHOD'] !== 'POST') throw new Exception('Invalid request method!');
             $require_fields = [
@@ -154,10 +155,26 @@ return  [
             $user = Authenticate::getAuthenticatedUser();
 
             $post = new Post($validatedData['post'], $user->getId(), $user->getUserName());
+            error_log('form/post post------------');
+            error_log(var_export($post, true));
+
 
             $postDAO = DAOFactory::getPostDAO();
 
             $postDAO->create($post);
+
+            if($isLike){
+                $countResult = $postDAO->countLikes($postId, $status);
+                header('Content-Type: application/json');
+                if($countResult){
+                    //$post = $postDAO->getById($postId);
+                    error_log('post/like-----------');
+                    $data = [
+                        "success" => true,
+                        "likeCount" => $postDAO->getLikeCount($postId)
+                    ];
+                    return new JSONRenderer($data);
+                };
 
        }catch(\InvalidArgumentException $e){
             error_log($e->getMessage());
@@ -169,37 +186,61 @@ return  [
         return new HTMLRenderer('page/home');
     }),
     'profile' => Route::create("profile", function(): HTTPRenderer {
+        $user = Authenticate::getAuthenticatedUser();
+        //echo $user->getId();
        return new HTMLRenderer('page/home');
     }),
     'post/like' => Route::create('post/like', function(): HTTPRenderer{
         if($_SERVER['REQUEST_METHOD'] !== 'POST') throw new Exception('Invalid request method!');
-
         try{
             $postId = $_POST['postId'];
+            error_log('post/like1-----------');
+            error_log($postId);
             $status = ($_POST['status'] === 'true') ? true : false;
             $postDAO = DAOFactory::getPostDAO();
-            $result = $postDAO->countLikes($postId, $status);
-        
-            header('Content-Type: application/json');
-            if($result){
-                $post = $postDAO->getById($postId);
-                $data = [
-                    "success" => true,
-                    "likeCount" => $post->getLikeCount()
-                ];
-                return new JSONRenderer($data);
-            };
+            $user = Authenticate::getAuthenticatedUser();
+            error_log('post/like2-----------');
+            error_log($status);
+            $isLike = $status 
+                ?   $postDAO->likePost($postId, $user->getId()) 
+                :   $postDAO->unLikePost($postId, $user->getId());
+
+            // クエリが実行された場合、いいねの数を処理し、フロントに返す
+            error_log('post/like3-----------');
+            if($isLike){
+                $countResult = $postDAO->countLikes($postId, $status);
+                header('Content-Type: application/json');
+                if($countResult){
+                    //$post = $postDAO->getById($postId);
+                    error_log('post/like-----------');
+                    $data = [
+                        "success" => true,
+                        "likeCount" => $postDAO->getLikeCount($postId)
+                    ];
+                    return new JSONRenderer($data);
+                };
+            }
+
         }catch(Exception $e){
             error_log($e->getMessage());
             $data = [
-                "success" => false
+                "success" => false,
             ];
             return new JSONRenderer($data);
         }
     }),
-    'post/commnet' => Route::create('post/commnet', function(): HTTPRenderer {
+    'post/comment' => Route::create('post/comment', function(): HTTPRenderer {
+        if($_SERVER['REQUEST_METHOD'] !== 'POST') throw new Exception('Invalid request method!');
+        
 
-    })
+
+        $data = [
+            "success" => true,
+            "comment_count" => 2,
+        ];
+       
+        return new JSONRenderer($data);
+    }),
 ];
 // profile/userID
 // notifications

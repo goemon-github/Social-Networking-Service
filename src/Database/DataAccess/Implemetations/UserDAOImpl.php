@@ -58,6 +58,10 @@ class UserDAOImpl implements UserDAO {
        return $this->rawDataToUser($userRaw);
     }
 
+    public function getLikes(){
+
+    }
+
     private function getRawById(int $id): ?array {
 
         $mysqli = DatabaseManager::getMysqliConnection();
@@ -96,7 +100,7 @@ class UserDAOImpl implements UserDAO {
         );
     }
 
-
+    // メール認証の確認
     public function updateEmailVerified(User $user): bool{
         $mysqli = DatabaseManager::getMysqliConnection();
 
@@ -122,6 +126,7 @@ class UserDAOImpl implements UserDAO {
         return $result;
     }
 
+    // プロフィールの更新
     private function updateProfile(User $user): bool {
         $mysqli = DatabaseManager::getMysqliConnection();
 
@@ -146,4 +151,5 @@ class UserDAOImpl implements UserDAO {
 
         return $result;
     }
+
 }

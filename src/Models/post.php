@@ -12,7 +12,9 @@ class Post implements Model {
     public function __construct(
         private string $content,
         private int $user_id,
-        private string $user_name,
+        private ?string $user_name = null,
+        private ?int $parent_post_id = null,
+        private int $comment_count = 0,
         private int $likes_count = 0,
         private ?int $post_id = null,
         private ?DateTimeStamp $dateTimeStamp = null,
@@ -40,6 +42,22 @@ class Post implements Model {
 
     public function setUserName(int $user_name): void {
         $this->user_name = $user_name;
+    }
+
+    public function getParentPostId(): ?int{
+        return $this->parent_post_id;
+    }
+
+    public function setParentPostId(int $parent_post_id): void{
+        $this->parent_post_id = $parent_post_id;
+    }
+
+    public function getCommentCount(): int{
+        return $this->comment_count;
+    } 
+
+    public function setCommnetCount(int $comment_count) {
+        $this->comment_count = $comment_count;
     }
 
     public function getLikeCount(): int{

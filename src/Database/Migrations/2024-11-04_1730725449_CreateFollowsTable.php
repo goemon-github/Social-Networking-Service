@@ -10,7 +10,7 @@ class CreateFollowsTable implements SchemaMigration
     {
         // マイグレーションロジックをここに追加してください
         return [
-            "CREATE TABLE follows(
+            "CREATE TABLE IF NOT EXISTS follows(
                 follower_id BIGINT NOT NULL,
                 followed_id BIGINT NOT NULL,
                 followed_at DATETIME DEFAULT CURRENT_TIMESTAMP,

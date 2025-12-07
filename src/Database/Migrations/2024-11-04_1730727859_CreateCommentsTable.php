@@ -10,7 +10,7 @@ class CreateCommentsTable implements SchemaMigration
     {
         // マイグレーションロジックをここに追加してください
         return [
-            "CREATE TABLE comments(
+            "CREATE TABLE IF NOT EXISTS comments(
                 id BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT,
                 post_id INT NOT NULL,
                 user_id BIGINT NOT NULL,

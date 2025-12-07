@@ -57,7 +57,7 @@ class Migrate extends AbstractCommand {
     }
 
     private function migrate(): void{
-        $this->log("Running mirations.....");
+        $this->log("Running migrations.....");
 
         $lastMigration = $this->getLastMigration();
         // ファイル名を日付順(ASC)に並べた配列に返します
@@ -127,9 +127,24 @@ class Migrate extends AbstractCommand {
     private function processQueries(array $queries): void{
         $mysqli = new MySQLWrapper();
         foreach($queries as $query) {
-            $result = $mysqli->query($query);
-            if ($result === false) throw new \Exception(sprintf("Query {%s} failed ", $query));
-            else $this->log('Run query: ' . $query);
+            try{
+                $result = $mysqli->query($query);
+                //if ($result === false) throw new \Exception(sprintf("Query {%s} failed ", $query));
+                if ($result instanceof \mysqli_result) {
+                    $result->free();
+                }
+                else $this->log('Run query: ' . $query);
+
+            }catch(\mysqli_sql_exception $e){
+                $code = $e->getCode();
+
+                if(in_array($code, [1060, 1054], true)){
+                    $this->log(sprintf('Skip ($d): %s', $code, $query));
+                    continue;
+                }
+                throw $e;
+
+            }
         }
     }
 
@@ -155,15 +170,15 @@ class Migrate extends AbstractCommand {
     private function rollback(int $n = 1): void {
         $this->log("Rolling back {$n} migration(s)....");
 
-        $lastMiration = $this->getLastMigration();
+        $lastMigration = $this->getLastMigration();
         $allMigrations = $this->getAllMigrationFiles();
 
         // ソートされたリストで最後のマイグレーションのインデックスを探します
-        $lastMigrationIndex = array_search($lastMiration, $allMigrations);
+        $lastMigrationIndex = array_search($lastMigration, $allMigrations);
 
         // 最後のマイグレーションが見つかったことを確認します
         if($lastMigrationIndex === false){
-            $this->log("Could not find the last miration run: " . $lastMiration);
+            $this->log("Could not find the last miration run: " . $lastMigration);
             return;
         }
 

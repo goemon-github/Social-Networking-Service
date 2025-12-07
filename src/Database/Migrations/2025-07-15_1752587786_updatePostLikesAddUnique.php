@@ -4,24 +4,18 @@ namespace src\database\migrations;
 
 use src\database\SchemaMigration;
 
-class AddProfileToUsersTable implements SchemaMigration
+class UpdatePostLikesAddUnique implements SchemaMigration
 {
     public function up(): array
     {
         // マイグレーションロジックをここに追加してください
-        return [
-            'ALTER TABLE users ADD COLUMN profile TEXT',
-            'ALTER TABLE users ADD COLUMN image_url VARCHAR(512)'
-        ];
+        return ['ALTER TABLE post_likes ADD UNIQUE KEY unique_user_post(user_id, post_id)'];
     }
 
     public function down(): array
     {
         // ロールバックロジックを追加してください
-        return ['ALTER TABLE users 
-        DROP COLUMN profile,
-        DROP COLUMN image_url
-        '];
+        return ["ALTER TABLE post_likes DROP INDEX unique_user_post"];
     }
 
 

@@ -4,25 +4,20 @@ namespace src\database\migrations;
 
 use src\database\SchemaMigration;
 
-class AddProfileToUsersTable implements SchemaMigration
+class AddCommentCountColumnToPosts implements SchemaMigration
 {
     public function up(): array
     {
         // マイグレーションロジックをここに追加してください
         return [
-            'ALTER TABLE users ADD COLUMN profile TEXT',
-            'ALTER TABLE users ADD COLUMN image_url VARCHAR(512)'
+            'ALTER TABLE posts ADD COLUMN comment_count INT AFTER parent_post_id;'
         ];
     }
 
     public function down(): array
     {
         // ロールバックロジックを追加してください
-        return ['ALTER TABLE users 
-        DROP COLUMN profile,
-        DROP COLUMN image_url
-        '];
+        return ['ALTER TABLE posts DROP COLUMN comment_count'];
     }
-
 
 }

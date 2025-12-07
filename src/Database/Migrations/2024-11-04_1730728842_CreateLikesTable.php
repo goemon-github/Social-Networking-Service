@@ -10,7 +10,7 @@ class CreateLikesTable implements SchemaMigration
     {
         // マイグレーションロジックをここに追加してください
         return [
-            "CREATE TABLE post_likes (
+            "CREATE TABLE IF NOT EXISTS post_likes (
                 id BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT,
                 user_id BIGINT NOT NULL,
                 post_id INT NOT NULL,
