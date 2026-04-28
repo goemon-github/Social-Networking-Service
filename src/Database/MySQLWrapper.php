@@ -13,8 +13,8 @@ class MySQLWrapper extends mysqli {
         
         $hostname = $hostname??Settings::env("MYSQL_HOST");
         $username = $username??Settings::env('MYSQL_USER');
-        $password = $password??Settings::env('MYSQL_USER_PASSWORD');
-        $database = $database??Settings::env('MYSQL_DATABASE_NAME');
+        $password = $password??Settings::env('MYSQL_PASSWORD');
+        $database = $database??Settings::env('MYSQL_DATABASE');
 
         parent::__construct($hostname, $username, $password, $database, $port, $socket);
     }

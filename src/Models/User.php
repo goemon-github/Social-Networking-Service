@@ -8,11 +8,11 @@ class User implements Model{
     use GenericModel;
 
     public function __construct(
-        private string $userName, 
+        private string $accountName, 
         private string $password,
         private string $email,
         private ?int $id = null ,
-        private ?string $accountName = '',
+        private ?string $displayName= '',
         private bool $emailVerified = false,
         private ?string $profile = '',
         private ?string $imagePath = '',
@@ -27,20 +27,20 @@ class User implements Model{
         return $this->id;
     }
 
-    public function setUserName(string $userName): void{
-        $this->userName = $userName;
-    }
-    
-    public function getUserName(): string {
-        return $this->userName ;
-    }
-
-    public function setAccountName(string $accountName): void {
+    public function setAccountName(string $accountName): void{
         $this->accountName = $accountName;
     }
-
+    
     public function getAccountName(): string {
-        return $this->accountName;
+        return $this->accountName ;
+    }
+
+    public function setDisplayName(string $displayName): void {
+        $this->displayName = $displayName;
+    }
+
+    public function getDisplayName(): string {
+        return $this->displayName;
     }
 
     public function setPassword(string $password): void {

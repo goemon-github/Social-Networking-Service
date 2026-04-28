@@ -11,35 +11,43 @@ class ComposerStaticInit662aedcc6781129fa81bbdd533343456
     );
 
     public static $prefixLengthsPsr4 = array (
-        's' => 
+        's' =>
         array (
             'src\\' => 4,
         ),
-        'P' => 
+        'S' =>
+        array (
+            'Smknstd\\FakerPicsumImages\\' => 26,
+        ),
+        'P' =>
         array (
             'Psr\\Container\\' => 14,
             'PHPMailer\\PHPMailer\\' => 20,
         ),
-        'F' => 
+        'F' =>
         array (
             'Faker\\' => 6,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'src\\' => 
+        'src\\' =>
         array (
             0 => __DIR__ . '/../..' . '/src',
         ),
-        'Psr\\Container\\' => 
+        'Smknstd\\FakerPicsumImages\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/smknstd/fakerphp-picsum-images/src',
+        ),
+        'Psr\\Container\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
         ),
-        'PHPMailer\\PHPMailer\\' => 
+        'PHPMailer\\PHPMailer\\' =>
         array (
             0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
         ),
-        'Faker\\' => 
+        'Faker\\' =>
         array (
             0 => __DIR__ . '/..' . '/fakerphp/faker/src/Faker',
         ),

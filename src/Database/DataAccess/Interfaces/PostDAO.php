@@ -11,10 +11,14 @@ interface PostDAO {
     public function updateContent(int $id, string $content): bool;
     public function countLikes(int $post_id, bool $status):bool;
     public function likePost(int $post_id, int $user_id):bool;
-    public function unlikePost(int $post_id, int $user_id):bool;
+    public function unLikePost(int $post_id, int $user_id):bool;
     public function getLikeCount(int $post_id):int;
     public function getAllPostsAndIsLiked (int $user_id): array;
     public function getUserPostsAndIsLiked(int $user_id): array;
-    public function getCommentCount(int $post_id): int;
+    public function getCountComment(int $post_id): int;
+    public function updateCommentCount(int $post_id, int $count): bool;
+    public function syncAllCommentCounts():bool;
+    public function syncAllLikeCounts(): bool;
+    public function syncAllPostCounts(): bool;
     public function delete(int $post_id): bool;
 }

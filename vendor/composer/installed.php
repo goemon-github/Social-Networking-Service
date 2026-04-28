@@ -3,7 +3,7 @@
         'name' => '__root__',
         'pretty_version' => 'dev-develop',
         'version' => 'dev-develop',
-        'reference' => 'd88ec32cb339a482c260ebeaf53e6461bd043aed',
+        'reference' => '44282e1dcdc312127dd02412ddaa49ee85655b10',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         '__root__' => array(
             'pretty_version' => 'dev-develop',
             'version' => 'dev-develop',
-            'reference' => 'd88ec32cb339a482c260ebeaf53e6461bd043aed',
+            'reference' => '44282e1dcdc312127dd02412ddaa49ee85655b10',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -45,6 +45,15 @@
             'install_path' => __DIR__ . '/../psr/container',
             'aliases' => array(),
             'dev_requirement' => false,
+        ),
+        'smknstd/fakerphp-picsum-images' => array(
+            'pretty_version' => 'v1.0.3',
+            'version' => '1.0.3.0',
+            'reference' => '3e8d45263046a7e9d03413f4e005522f20164643',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../smknstd/fakerphp-picsum-images',
+            'aliases' => array(),
+            'dev_requirement' => true,
         ),
         'symfony/deprecation-contracts' => array(
             'pretty_version' => 'v3.5.0',

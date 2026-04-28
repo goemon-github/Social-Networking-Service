@@ -16,13 +16,13 @@ class UserDAOImpl implements UserDAO {
 
         $mysqli = DatabaseManager::getMysqliConnection();
 
-        $query = " INSERT INTO users (user_name, password, email) VALUES (?, ?, ?)";
+        $query = " INSERT INTO users (account_name, password, email) VALUES (?, ?, ?)";
 
         $result = $mysqli->prepareAndExecute(
             $query,
             "sss",
             [
-                $user->getUserName(),
+                $user->getAccountName(),
                 password_hash($password, PASSWORD_DEFAULT),
                 $user->getEmail()
             ]
@@ -51,6 +51,13 @@ class UserDAOImpl implements UserDAO {
         return $this->rawDataToUser($userRaw);
     }
 
+    public function getByAccountName(string $accountName): ?User {
+        $userRaw = $this->getRawByAccountName($accountName);
+        if($userRaw === null) return null;
+
+        return $this->rawDataToUser($userRaw);
+    }
+
     public function getByEmail(string $email): ?User{
        $userRaw = $this->getRawByEmail($email);
        if($userRaw === null) return null;
@@ -74,6 +81,19 @@ class UserDAOImpl implements UserDAO {
         return $result;
     }
 
+    private function getRawByAccountName(string $accountName): ?array {
+        $mysqli = DatabaseManager::getMysqliConnection();
+
+        $query = "SELECT * FROM users WHERE account_name = ?";
+
+        $result = $mysqli->prepareAndFetchAll($query, 's', [$accountName])[0] ?? null;
+
+        if ($result === null) return null;
+
+        return $result;
+    }
+
+
     private function getRawByEmail(string $email): ?array {
         $mysqli = DatabaseManager::getMysqliConnection();
  
@@ -89,8 +109,8 @@ class UserDAOImpl implements UserDAO {
     private function rawDataToUser(array $rawData): User {
         return  new User(
             id: $rawData['id'],
-            userName: $rawData['user_name'],
-            accountName: $rawData['account_name'] ?? null,
+            accountName: $rawData['account_name'],
+            displayName: $rawData['display_name'] ?? null,
             password: $rawData['password'],
             email: $rawData['email'],
             emailVerified: $rawData['email_verified'],

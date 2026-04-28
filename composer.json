@@ -8,5 +8,8 @@
 		"psr-4": {
 			"src\\": "src/"
 		}
-	}
+	},
+    "require-dev": {
+        "smknstd/fakerphp-picsum-images": "^1.0"
+    }
 }

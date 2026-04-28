@@ -13,7 +13,7 @@ class DatabaseHeler {
         posts.user_id, 
         posts.content,
         posts.created_at, 
-        users.user_name 
+        users.account_name 
         FROM posts 
         JOIN users ON   users.id = posts.user_id
         ORDER BY posts.created_at DESC ';

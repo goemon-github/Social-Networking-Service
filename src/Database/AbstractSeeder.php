@@ -93,7 +93,7 @@ abstract class AbstractSeeder implements Seeder {
         $columnNames = array_map(function($columnInfo){ return $columnInfo['column_name'];}, $this->tableColumns);
 
         // set句のプレースホルダーを作成
-        $setClause = 
+        #$setClause = 
 
         // クエリを準備する際、count($row)のプレースホルダー '?' があります。bind_param関数はこれらにデータを挿入します。
         $placeholders = str_repeat('?,', count($row) - 1) . '?';

@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'src\\' => array($baseDir . '/src'),
+    'Smknstd\\FakerPicsumImages\\' => array($vendorDir . '/smknstd/fakerphp-picsum-images/src'),
     'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
     'PHPMailer\\PHPMailer\\' => array($vendorDir . '/phpmailer/phpmailer/src'),
     'Faker\\' => array($vendorDir . '/fakerphp/faker/src/Faker'),

@@ -25,6 +25,7 @@ return  [
         if(!Authenticate::isLoggedIn()){
             return  new HTMLRenderer('page/login');
         }
+        return new RedirectRenderer('home');
     })->setMiddleware(['guest']),
     'form/login' => Route::create('form/login', function(): HTTPRenderer{
        try{
@@ -42,20 +43,48 @@ return  [
 
        }catch(AuthenticationFailureException $e){
             error_log($e->getMessage());
-            flashData::setFlashData('error', 'Falied to login, wrong email and/or password.');
+            FlashData::setFlashData('error', 'Falied to login, wrong email and/or password.');
             return new RedirectRenderer('login');
        }catch(\InvalidArgumentException $e){
             error_log($e->getMessage());
 
-            flashData::setFlashData('error', 'Invalid Data.');
+            FlashData::setFlashData('error', 'Invalid Data.');
             return new RedirectRenderer('login');
        }catch(Exception $e){
             error_log($e->getMessage());
 
-            flashData::setFlashData('error', 'An error occurred.');
+            FlashData::setFlashData('error', 'An error occurred.');
             return new RedirectRenderer('login');
        }
     })->setMiddleware(['guest']),
+
+    // guest login
+    'guest/login' => Route::create('guest/login', function(): HTTPRenderer{
+       try{
+            if($_SERVER['REQUEST_METHOD'] !== 'POST'){
+                throw new Exception('Invalid request method!');
+            } 
+
+            $userDAO = DAOFactory::getUserDAO();
+            $guestUser = $userDAO->getByAccountName('guest');
+            if($guestUser === null) {
+                throw new Exception('Guest user not found ');
+            } 
+
+            $result = Authenticate::loginAsUser($guestUser);
+            if(!$result){
+                throw new Exception('Failed to login as guest user.');
+            }
+            FlashData::setFlashData('success', 'Logged in as guest user.');
+            return new RedirectRenderer('home');
+
+       }catch(Exception $e){
+            error_log($e->getMessage());
+            FlashData::setFlashData('error', 'Failed to login as guest user.');
+            return new RedirectRenderer('login');
+       }
+    })->setMiddleware(['guest']),
+
     // logout
     'logout' => Route::create('logout', function(): HTTPRenderer {
         if(!Authenticate::isLoggedIn()){
@@ -67,14 +96,18 @@ return  [
         FlashData::setFlashData('success', 'Logged out.');
         return new RedirectRenderer('login');
     }),
+
+    // register
     'register' => Route::create('register', function(): HTTPRenderer{
         return  new HTMLRenderer('page/register');
     })->setMiddleware(['guest']),
-    'form/register' => Route::create('form/regisiter', function(): HTTPRenderer{
+
+    // form register
+    'form/register' => Route::create('form/register', function(): HTTPRenderer{
         try{
             if($_SERVER['REQUEST_METHOD'] !== 'POST') throw new Exception('Invalid request method!');
             $required_fields = [
-                'username' => ValueType::STRING,
+                'accountname' => ValueType::STRING,
                 'email' => ValueType::EMAIL,
                 'password' => ValueType::PASSWORD,
                 'confirm_password' => ValueType::PASSWORD,
@@ -97,7 +130,7 @@ return  [
             }
             // 新しいUserオブジェクトを作成
             $user = new User(
-                userName: $validatedData['username'],
+                accountName: $validatedData['accountname'],
                 password: $validatedData['password'],
                 email: $validatedData['email'],
             );
@@ -131,65 +164,104 @@ return  [
         }
 
     })->setMiddleware(['guest']),
-    // home
+
+    // home screen
     'home' => Route::create('home', function(): HTTPRenderer{
         return  new HTMLRenderer('page/home');
     }),
-    'generate-url'=>Route::create('generate-url', function(): HTTPRenderer{
 
-        if(isset($_GET['lasts'])){
-            $validatedData['expiration'] = time() + ValidationHelper::integer($_GET['lasts']);
-        }
-
-        return  new HTMLRenderer('page/home');
-    }),
-    'form/post' => Route::create("form/post", function(): HTTPRenderer {
-        error_log('form/post------------');
-        try{
-            if($_SERVER['REQUEST_METHOD'] !== 'POST') throw new Exception('Invalid request method!');
-            $require_fields = [
-                'post' => ValueType::STRING,
-            ];
-            $validatedData  = ValidationHelper::validateFields($require_fields, $_POST);
-
-            $user = Authenticate::getAuthenticatedUser();
-
-            $post = new Post($validatedData['post'], $user->getId(), $user->getUserName());
-            error_log('form/post post------------');
-            error_log(var_export($post, true));
-
-
-            $postDAO = DAOFactory::getPostDAO();
-
-            $postDAO->create($post);
-
-            if($isLike){
-                $countResult = $postDAO->countLikes($postId, $status);
-                header('Content-Type: application/json');
-                if($countResult){
-                    //$post = $postDAO->getById($postId);
-                    error_log('post/like-----------');
-                    $data = [
-                        "success" => true,
-                        "likeCount" => $postDAO->getLikeCount($postId)
-                    ];
-                    return new JSONRenderer($data);
-                };
-
-       }catch(\InvalidArgumentException $e){
-            error_log($e->getMessage());
-            flashData::setFlashData('error', 'Invalid Data.');
-       }catch(Exception $e){
-            error_log($e->getMessage());
-            flashData::setFlashData('error', 'An error occurred.');
-       }
-        return new HTMLRenderer('page/home');
-    }),
+    // profile screen
     'profile' => Route::create("profile", function(): HTTPRenderer {
         $user = Authenticate::getAuthenticatedUser();
         //echo $user->getId();
        return new HTMLRenderer('page/home');
     }),
+
+    'timeline/items' => Route::create('timeline/items', function(): HTTPRenderer{
+        $postDAO = DAOFactory::getPostDAO();
+        try{
+            $result = $postDAO->syncAllPostCounts();
+        }catch(Exception $e){
+            error_log($e->getMessage());
+             FlashData::setFlashData('error', 'Failed to load timeline items.');
+        }
+        return new HTMLRenderer('component/timelineItems');
+        
+    }),
+
+    // form post
+    'form/post' => Route::create("form/post", function(): HTTPRenderer {
+        try{
+            if($_SERVER['REQUEST_METHOD'] !== 'POST'){
+                throw new Exception('Invalid request method!');
+            } 
+
+            $require_fields = [
+                'post' => ValueType::STRING,
+            ];
+
+            $validatedData  = ValidationHelper::validateFields($require_fields, $_POST);
+            $user = Authenticate::getAuthenticatedUser();
+
+            if($user === null){
+                throw new Exception('User not authenticated!');
+            }
+
+            $parantPostId = isset($_POST['parent_post_id']) ? ValidationHelper::integer($_POST['parent_post_id']) : null;
+
+            $post = new Post(
+                user_id: $user->getId(), 
+                content: $validatedData['post'], 
+                parent_post_id: $parantPostId !== null ? $parantPostId : null
+            );
+
+            $postDAO = DAOFactory::getPostDAO();
+
+            $success = $postDAO->create($post);
+            if($success){
+                $data = [
+                    'success' => true,
+                    'message' => 'Post created successfully.',
+                ];
+                error_log(print_r($post, true));
+                FlashData::setFlashData('success', 'Post created successfully.');
+
+                // 通常の投稿ならparantPostIdはない
+                if($parantPostId !== null) {
+                    // コメント数の更新
+                    $count = $postDAO->getCountComment($post->getPostId());
+                    $postDAO->updateCommentCount($post->getPostId(), $count);
+                }
+
+            }else {
+                $data = [
+                    'success' => false,
+                    'message' => 'Failed to create post.',
+                ];
+            }
+
+             return new JSONRenderer($data);
+
+
+        } catch(\InvalidArgumentException $e){
+            error_log($e->getMessage());
+            FlashData::setFlashData('error', 'Invalid Data.');
+           $data = [
+                'success' => false,
+                'message' => 'Invalid Data.',
+            ];
+            return new JSONRenderer($data);
+       }catch(Exception $e){
+            error_log($e->getMessage());
+            FlashData::setFlashData('error', 'An error occurred.');
+            $data = [
+                'success' => false,
+                'message' => 'An error occurred.',
+            ];
+            return new JSONRenderer($data); 
+        }
+    }),
+    // post like
     'post/like' => Route::create('post/like', function(): HTTPRenderer{
         if($_SERVER['REQUEST_METHOD'] !== 'POST') throw new Exception('Invalid request method!');
         try{
@@ -221,6 +293,8 @@ return  [
                 };
             }
 
+            return new HTMLRenderer('page/home');
+
         }catch(Exception $e){
             error_log($e->getMessage());
             $data = [
@@ -229,17 +303,36 @@ return  [
             return new JSONRenderer($data);
         }
     }),
-    'post/comment' => Route::create('post/comment', function(): HTTPRenderer {
-        if($_SERVER['REQUEST_METHOD'] !== 'POST') throw new Exception('Invalid request method!');
-        
 
+    // post comment
+    'post/comment/count' => Route::create('post/comment/count', function(): HTTPRenderer {
+        if($_SERVER['REQUEST_METHOD'] !== 'POST') throw new Exception('Invalid request method!');
+        $postId = $_POST['postId'];
+        $postDAO = DAOFactory::getPostDAO();
+        $count = $postDAO->getCountComment($postId);
+        if($count === null) {
+            $data = [
+                "success" => false,
+                "comment_count" => 0,
+            ];
+            return new JSONRenderer($data);
+        };
 
         $data = [
             "success" => true,
-            "comment_count" => 2,
+            "comment_count" => $count,
         ];
-       
+
         return new JSONRenderer($data);
+    }),
+
+    'generate-url'=>Route::create('generate-url', function(): HTTPRenderer{
+
+        if(isset($_GET['lasts'])){
+            $validatedData['expiration'] = time() + ValidationHelper::integer($_GET['lasts']);
+        }
+
+        return  new HTMLRenderer('page/home');
     }),
 ];
 // profile/userID

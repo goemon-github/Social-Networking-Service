@@ -10,7 +10,7 @@ class AddReplyColumnToPosts implements SchemaMigration
     {
         // マイグレーションロジックをここに追加してください
         return [
-            'ALTER TABLE posts ADD COLUMN parent_post_id INT NULL AFTER user_name;'
+            'ALTER TABLE posts ADD COLUMN parent_post_id INT NULL ;'
         ];
     }
 

@@ -16,7 +16,7 @@ class Seed extends AbstractCommand {
     }
 
     public function execute(): int {
-        $argument = $this->getArgumentValue('update');
+        #$argument = $this->getArgumentValue('update');
 
         $this->runAllSeeds();
         return 0;

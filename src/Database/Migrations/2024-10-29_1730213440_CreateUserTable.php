@@ -12,10 +12,13 @@ class CreateUserTable implements SchemaMigration
         return [
             "CREATE TABLE IF NOT EXISTS users (
             id BIGINT PRIMARY KEY AUTO_INCREMENT,
-            user_name VARCHAR(255) NOT NULL,
-            password VARCHAR(32) NOT NULL,
+            account_name VARCHAR(255) NOT NULL UNIQUE,
+            display_name VARCHAR(255),
+            password VARCHAR(512) NOT NULL,
+            profile TEXT,
+            image_url VARCHAR(512),
             email VARCHAR(255) NOT NULL UNIQUE,
-            email_verified BOOLEAN NOT NULL,
+            email_verified BOOLEAN NOT NULL DEFAULT 0,
             created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 
             )"
